@@ -3,39 +3,34 @@ import PrismaClient from '../../prisma';
 import { hash } from 'bcryptjs';
 
 
-interface UserRequest{
+interface CategoryRequest{
     name: string;
-    email: string;
-    password: string;
 }
 
 
-class CreateUserService{
-    async execute({name, email, password}: UserRequest){
-        if(!email){
+class CreateCategoryService{
+    
+    async execute({name}: CategoryRequest){
+        if(!name){
             throw new Error("Email incorret")
         }
 
         const userAlreadyExistsExists = await PrismaClient.user.findFirst({
             where:{
-                email:email
+                name:name
             }
         })
 
         if(userAlreadyExistsExists){
-            throw new Error("User already exists");
+            throw new Error("Category already exists!");
         }
-        const passwordHash = await hash(password, 8);
-        const user = await prismaClient.user.create({
+        const user = await prismaClient.category.create({
             data:{
-                name: name,
-                email: email,
-                password: passwordHash
+                name: name
             },
             select:{
                 id: true,
                 name: true,
-                email: true
             }
         })
 
@@ -44,4 +39,4 @@ class CreateUserService{
 }
 
 
-export { CreateUserService };
+export { CreateCategoryService };
